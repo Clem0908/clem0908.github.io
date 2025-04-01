@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Clem0908 - Star Wars: Battlefront II (2005) tips</title>
+  </head>
+  <body>
+    <h1>Tips for Star Wars: Battlefront II (2005) on PC</h1>
+    <h2>LAN gaming through VPN - Freebox OpenVPN server example</h2>
+      <ul>
+        <li>Set up the OpenVPN server (bridged mode) on the Freebox</li>
+        <li>Download the .ovpn files corresponding to the user created</li>
+        <li>Edit and append to the file: 'ifconfig 192.168.0.A 255.255.255.0', with A being a valid local IP address</li>
+        <li>Add: 'script-security 2'</li>
+        <li>Add: 'up route.sh', with 'route.sh' a script given below</li>
+        <li>sudo openvpn [file].ovpn</li>
+      </ul>
+      <h3>route.sh:</h3>
+      <code>#!/bin/sh<br>route add -host 255.255.255.255/32 tap0</code></p>
+    
+    <h2>Command line arguments</h2>
+      <p>A list of command line arguments for 'BattlefrontII.exe':</p>
+      <ul>
+        <li>/nointro - skips the intro</li>
+        <li>/win - windowed</li>
+        <li>/resolution 320 240 - maximum recommended: 1280 720</li>
+        <li>/[no]framelock - disable V-Sync</li>
+      </ul>
+      <p>Dedicated Server options & more options right <a href="https://steamcommunity.com/sharedfiles/filedetails?l=english&id=2824882342&searchtext=crash+fix">here</a></p> 
+
+    <h2>Team-up with AI</h2>
+      <ol>
+        <li>Modify controls: Squad commands</li>
+        <li>Aim an ally and press the shortcut, the AI ally will follow you</li>
+      </ol>
+
+    <h2>Batch scripts for hosting as a dedicated server</h2>
+      <h3>Conquest all maps, clones era:</h3><code>.\BattlefrontII.exe /norender /nointro /noframelock /win /resolution 800 600 /autonet dedicated /lan /nosound /noaim /tps 60 /heroes 0 /gamename LAN_all_conquests_clones /playerlimit 64 /playercount 1 /bots 64 /difficulty 3 /throttle 2048 /pregametime 120 /nowait /sideselect /adminpw LAN /spawn 0 /bandwidth 6144 cor1c_con 1000 1000 dag1c_con 1000 1000 dea1c_con 1000 1000 fel1c_con 1000 1000 geo1c_con 1000 1000 kam1c_con 1000 1000 kas2c_con 1000 1000 mus1c_con 1000 1000 myg1c_con 1000 1000 nab2c_con 1000 1000 pol1c_con 1000 1000 tan1c_con 1000 1000 tat2c_con 1000 1000 tat3c_con 1000 1000 uta1c_con 1000 1000 yav1c_con 1000 1000</code>
+      <h3>Conquest all maps, rebels era:</h3><code>.\BattlefrontII.exe /norender /nointro /noframelock /win /resolution 800 600 /autonet dedicated /lan /nosound /noaim /tps 60 /heroes 0 /gamename LAN_all_conquests_rebels /playerlimit 64 /playercount 1 /bots 64 /difficulty 3 /throttle 2048 /pregametime 120 /nowait /sideselect /adminpw LAN /spawn 0 /bandwidth 6144 cor1g_con 1000 1000 dag1g_con 1000 1000 dea1g_con 1000 1000 end1g_con 1000 1000 fel1g_con 1000 1000 hot1g_con 1000 1000 kam1g_con 1000 1000 kas2g_con 1000 1000 mus1g_con 1000 1000 myg1g_con 1000 1000 nab2g_con 1000 1000 pol1g_con 1000 1000 tan1g_con 1000 1000 tat2g_con 1000 1000 tat3g_con 1000 1000 uta1g_con 1000 1000 yav1g_con 1000 1000</code>
+  </body>
+</html>
