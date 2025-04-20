@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clem0908 - Arch Linux installation</title>
+</head>
+<body>
+<h1>Arch Linux installation</h1>
+<ol>
+<h2>Keyboard, terminal, time configuration</h2>
+<blockquote>
+<li>loadkeys fr-latin1</li>
+</blockquote>
+<blockquote>
+<li>setterm --blength=0</li>
+</blockquote>
+<blockquote>
+<li>setfont lat1-16</li>
+</blockquote>
+<blockquote>
+<li>timedatectl</li>
+</blockquote>
+<h2>Disks, partitions configuration</h2>
+<blockquote>
+<li>fdisk -l</li>
+</blockquote>
+<blockquote>
+<li>fdisk /dev/[device]</li>
+</blockquote>
+<blockquote>
+<li>g</li>
+</blockquote>
+<blockquote>
+<li>n, +4G</li>
+</blockquote>
+<blockquote>
+<li>t, uefi</li>
+</blockquote>
+<blockquote>
+<li>n, +2G</li>
+</blockquote>
+<blockquote>
+<li>t, swap</li>
+</blockquote>
+<blockquote>
+<li>n</li>
+</blockquote>
+<blockquote>
+<li>t, 23</li>
+</blockquote>
+<blockquote>
+<li>w</li>
+</blockquote>
+<blockquote>
+<li>mkfs.fat -F32 /dev/[uefipart]</li>
+</blockquote>
+<blockquote>
+<li>mkswap /dev/[swappart]</li>
+</blockquote>
+<blockquote>
+<li>swapon /dev/[swappart]</li>
+</blockquote>
+<h2>Encryption setup</h2>
+<blockquote>
+<li>cryptsetup luksFormat --type luks2 --cipher aes-xts-plain64 --hash sha256 --iter-time 2000 --key-size 256 --pbkdf pbkdf2 --use-urandom --verify-passphrase /dev/[rootpart]</li>
+</blockquote>
+<blockquote>
+<li>cryptsetup open /dev/[rootpart] root</li>
+</blockquote>
+<blockquote>
+<li>mkfs.ext4 /dev/mapper/root</li>
+</blockquote>
+<blockquote>
+<li>mount /dev/mapper/root /mnt</li>
+</blockquote>
+<h2>Encryption passphrase check</h2>
+<blockquote>
+<li>umount /mnt</li>
+</blockquote>
+<blockquote>
+<li>cryptsetup close root</li>
+</blockquote>
+<blockquote>
+<li>cryptsetup open /dev/[rootpart] root</li>
+</blockquote>
+<h2>Mount partitions</h2>
+<blockquote>
+<li>mount /dev/mapper/root /mnt</li>
+</blockquote>
+<blockquote>
+<li>mount --mkdir /dev/[uefipart] /mnt/boot</li>
+</blockquote>
+<h2>Deploying base system</h2>
+<blockquote>
+<li>pacman -Sy</li>
+</blockquote>
+<blockquote>
+<li>pacstrap -K /mnt base linux linux-firmware linux-headers [amd-ucode | intel-ucode] e2fsprogs exfatprogs ntfs-3g networkmanager iwd vim nano man-db man-pages texinfo</li>
+</blockquote>
+<blockquote>
+<li>genfstab -U /mnt &gt;&gt; /mnt/etc/fstab</li>
+</blockquote>
+<h2>Enter and configure the new system</h2>
+<blockquote>
+<li>arch-chroot /mnt</li>
+</blockquote>
+<blockquote>
+<li>touch /etc/localtime ; ln -sf /usr/share/zoneinfo/Region/City /etc/localtime</li>
+</blockquote>
+<blockquote>
+<li>timedatectl set-timezone Region/City</li>
+</blockquote>
+<blockquote>
+<li>hwclock --systohc</li>
+</blockquote>
+<blockquote>
+<li>vim /etc/locale.gen</li>
+</blockquote>
+<blockquote>
+<li>locale-gen</li>
+</blockquote>
+<blockquote>
+<li>vim /etc/vconsole.conf</li><br>
+KEYMAP=fr-latin1<br>
+FONT=lat1-16
+</blockquote>
+<blockquote>
+<li>vim /etc/hostname</li>
+</blockquote>
+<blockquote>
+<li>vim /etc/mkinitcpio.conf</li><br>
+HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt filesystems fsck)
+</blockquote>
+<blockquote>
+<li>mkinitcpio -P</li>
+</blockquote>
+<blockquote>
+<li>passwd root</li>
+</blockquote>
+<h2>GRUB configuration</h2>
+<blockquote>
+<li>pacman -S efibootmgr grub git debugedit fakeroot sudo xkeyboard-config</li>
+</blockquote>
+<blockquote>
+<li>useradd -M aur</li>
+</blockquote>
+<blockquote>
+<li>passwd aur</li>
+</blockquote>
+<blockquote>
+<li>mkdir -p /opt/aur</li>
+</blockquote>
+<blockquote>
+<li>chown aur:aur /opt/aur</li>
+</blockquote>
+<blockquote>
+<li>usermod -d /opt/aur aur</li>
+</blockquote>
+<blockquote>
+<li>su aur</li>
+</blockquote>
+<blockquote>
+<li>cd</li>
+</blockquote>
+<blockquote>
+<li>git clone https://aur.archlinux.org/ckbcomp.git</li>
+</blockquote>
+<blockquote>
+<li>cd ckbcomp</li>
+</blockquote>
+<blockquote>
+<li>vim PKGBUILD</li><br>
+source=("https://salsa.debian.org/installer-team/console-setup/-/archive/${pkgver}/console-setup-${pkgver}.tar.gz")
+</blockquote>
+<blockquote>
+<li>makepkg -s (--skipchecksums)</li>
+</blockquote>
+<blockquote>
+<li>exit</li>
+</blockquote>
+<blockquote>
+<li>pacman -U /opt/aur/ckbcomp/*zst</li>
+</blockquote>
+<blockquote>
+<li>vim /etc/default/grub</li><br>
+GRUB_CMDLINE_LINUX_DEFAULT=“cryptdevice=UUID=uuid-of-/dev/[rootpart]:root root=/dev/mapper/root loglevel=7”<br>
+GRUB_ENABLE_CRYPTODISK=y<br>
+GRUB_TERMINAL_INPUT=[at_keyboard | usb_keyboard | console]<br>
+GRUB_PRELOAD_MODULES="keylayouts"
+</blockquote>
+<blockquote>
+<li>grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB /dev/[disk-with-boot-part]</li>
+</blockquote>
+<blockquote>
+<li>mkdir -p /boot/grub/layouts</li>
+</blockquote>
+<blockquote>
+<li>ckbcomp fr | grub-mklayout -o /boot/grub/layouts/fr.gkb</li>
+</blockquote>
+<blockquote>
+<li>echo keymap /boot/grub/layouts/fr.gkb >> /etc/grub.d/40_custom</li>
+</blockquote>
+<blockquote>
+<li>grub-mkconfig -o /boot/grub/grub.cfg</li>
+</blockquote>
+<h2>Installation of needed packages</h2>
+<blockquote>
+<li>pacman -S alsa-utils bluez cpupower curl dmidecode i3-wm i3lock i3status iproute2 iptables nmap openssh plasma python sddm smartmontools tcpdump util-linux xz xorg</li>
+</blockquote>
+<blockquote>
+<li>vim /etc/modprobe.d/nospkr.conf</li><br>
+blacklist pcspkr
+</blockquote>
+<blockquote>
+<li>exit</li>
+</blockquote>
+<blockquote>
+<li>umount -R /mnt</li>
+</blockquote>
+<blockquote>
+<li>reboot</li>
+</blockquote>
+<blockquote>
+<li>localectl set-x11-keymap fr pc105</li>
+</blockquote>
+</ol>
+</body>
+</html>
