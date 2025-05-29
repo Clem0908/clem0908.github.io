@@ -8,38 +8,15 @@
 <body>
 <h1>macvlan interface for bypassing a VPN connection</h1>
 
-<h2>Requirements</h2>
-<ul><li>Install firejail</li></ul>
-
 <ol>
-<li><h3>Create a virtual interface</h3></li>
-<ul>
-  <li>ip link add link [existinginterface] name [existinginterface].1 type macvlan</li>
-</ul>
-
-<li><h3>Create a netdev file for systemd</h3></li>
-  <p>/etc/systemd/network/[existinginterface].1.netdev</p>
-  <pre>
-  [NetDev]
-  Name=[existinginterface].1
-  Kind=macvlan
-  </pre>
-
-<li><h3>Create a network file for systemd</h3></li>
-  <p>/etc/systemd/network/[existinginterface].1.network</p>
-  <pre>
-  [Match]
-  Name=[existinginterface].1
-    
-  [Network]
-  DHCP=yes
-  </pre>
-
-<li><h3>Start the systemd-networkd service</h3></li>
-  <blockquote>systemctl start systemd-networkd</blockquote>
-
-<li><h3>Start the program</h3></li>
-  <blockquote>firejail --net=[existinginterface].1 [binary]</blockquote>
+  <li>ip l a l [exisiting_interface] name [virtual_interface] type macvlan</li>
+  <li>ip netns a [namespace]</li>
+  <li>ip l s [virtual_interface] netns [namespace]</li>
+  <li>ip netns exec [namespace] ip l s [virtual_interface] up</li>
+  <li>ip netns exec [namespace] dhclient [virtual_interface]</li>
+  <li>mkdir -p /etc/netns/[namespace]</li>
+  <li>edit /etc/netns/[namespace]/resolv.conf</li>
+  <li>ip netns exec [namespace] su --command='[command]' [user]</li>
 </ol>
 
 </body>
